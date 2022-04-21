@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <SectionHeader className="dashboard__section-header">
-        Dashboard for {process.env.REACT_APP_TAPIS_TENANT_URL}
+        Dashboard for training.tapis.io 
       </SectionHeader>
       <div className={styles.header}>
         <h5>Welcome to TAPIS-UI</h5>
