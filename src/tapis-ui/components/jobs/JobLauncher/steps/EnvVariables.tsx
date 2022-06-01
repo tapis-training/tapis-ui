@@ -10,8 +10,8 @@ import {
   useField,
   FieldArrayRenderProps,
 } from 'formik';
-import { FormikJobStepWrapper } from '../components';
 import { FormikInput } from 'tapis-ui/_common';
+import { JobStep } from '..';
 import * as Yup from 'yup';
 
 type EnvVariableFieldProps = {
@@ -59,7 +59,6 @@ const EnvVariablesRender: React.FC = () => {
       name={'parameterSet.envVariables'}
       render={(arrayHelpers) => (
         <div>
-          <h3>Environment Variables</h3>
           <div className={fieldArrayStyles['array-group']}>
             {envVariables.map((envVariable, index) => (
               <EnvVariableField index={index} arrayHelpers={arrayHelpers} />
@@ -78,39 +77,11 @@ const EnvVariablesRender: React.FC = () => {
 };
 
 export const EnvVariables: React.FC = () => {
-  const { job } = useJobLauncher();
-
-  const validationSchema = Yup.object().shape({
-    parameterSet: Yup.object({
-      envVariables: Yup.array(
-        Yup.object({
-          key: Yup.string()
-            .min(1)
-            .required('A key name is required for this environment variable'),
-          value: Yup.string().required(
-            'A value is required for this environment variable'
-          ),
-        })
-      ),
-    }),
-  });
-
-  const initialValues = useMemo(
-    () => ({
-      parameterSet: {
-        envVariables: job.parameterSet?.envVariables,
-      },
-    }),
-    [job]
-  );
-
   return (
-    <FormikJobStepWrapper
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
+    <div>
+      <h2>Environment Variables</h2>
       <EnvVariablesRender />
-    </FormikJobStepWrapper>
+    </div>
   );
 };
 
@@ -128,3 +99,33 @@ export const EnvVariablesSummary: React.FC = () => {
     </div>
   );
 };
+
+const validationSchema = Yup.object().shape({
+  parameterSet: Yup.object({
+    envVariables: Yup.array(
+      Yup.object({
+        key: Yup.string()
+          .min(1)
+          .required('A key name is required for this environment variable'),
+        value: Yup.string().required(
+          'A value is required for this environment variable'
+        ),
+      })
+    ),
+  }),
+});
+
+const step: JobStep = {
+  id: 'envVariables',
+  name: 'Environment Variables',
+  render: <EnvVariables />,
+  summary: <EnvVariablesSummary />,
+  validationSchema,
+  generateInitialValues: ({ job }) => ({
+    parameterSet: {
+      envVariables: job.parameterSet?.envVariables,
+    },
+  }),
+};
+
+export default step;
